@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishScanner | Advanced Phishing Detection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+ <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Animated Background Elements -->
+    <div class="bg-elements">
+        <div class="bg-element" style="width: 300px; height: 300px; background: var(--primary); top: 10%; left: 5%; animation-duration: 25s;"></div>
+        <div class="bg-element" style="width: 200px; height: 200px; background: var(--success); top: 60%; left: 80%; animation-duration: 20s; animation-delay: 2s;"></div>
+        <div class="bg-element" style="width: 150px; height: 150px; background: var(--danger); top: 30%; left: 70%; animation-duration: 18s; animation-delay: 4s;"></div>
+        <div class="bg-element" style="width: 250px; height: 250px; background: var(--warning); top: 70%; left: 10%; animation-duration: 22s; animation-delay: 1s;"></div>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>PhishScanner</h1>
+                        <p>Advanced phishing detection for your online safety</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/">
+                    <div class="input-group">
+                        <input type="text" name="url" placeholder="Enter URL to analyze (e.g., https://example.com)" required>
+                        <button type="submit">
+                            <i class="fas fa-search"></i> Scan URL
+                        </button>
+                    </div>
+                </form>
+
+                {% if error %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i> {{ error }}
+                    </div>
+                {% endif %}
+
+                {% if result %}
+                    <div class="result-card result-{{ result.prediction.lower() }}">
+                        <div class="result-header">
+                            <h2 class="result-title">
+                                <i class="fas fa-file-alt"></i> Scan Results
+                            </h2>
+                            <div class="result-badge badge-{{ result.prediction.lower() }}">
+                                {% if result.prediction == 'PHISHING' %}
+                                    <i class="fas fa-radiation"></i> PHISHING
+                                {% elif result.prediction == 'SUSPICIOUS' %}
+                                    <i class="fas fa-exclamation-triangle"></i> SUSPICIOUS
+                                {% else %}
+                                    <i class="fas fa-check-circle"></i> LEGITIMATE
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="result-details">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="fas fa-link"></i> URL Analyzed:
+                                </div>
+                                <div>{{ result.url }}</div>
+                            </div>
+                            
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>Phishing Probability</span>
+                                    <span class="progress-value">{{ "%.1f"|format(result.phishing_probability * 100) }}%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill fill-{% if result.prediction == 'PHISHING' %}danger{% elif result.prediction == 'SUSPICIOUS' %}warning{% else %}success{% endif %}" 
+                                         style="width: {{ result.phishing_probability * 100 }}%"></div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="security-analysis-title">
+                                <i class="fas fa-search-plus"></i> Security Analysis
+                            </h3>
+                            
+                            <div class="features-grid">
+                                <div class="feature-card">
+                                    <div class="feature-icon {% if result.features.Have_IP %}feature-danger{% else %}feature-safe{% endif %}">
+                                        <i class="fas fa-network-wired"></i>
+                                    </div>
+                                    <div class="feature-name">IP Address</div>
+                                    <div class="feature-value">
+                                        {% if result.features.Have_IP %}Detected{% else %}Not found{% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-card">
+                                    <div class="feature-icon {% if result.features.Have_At %}feature-danger{% else %}feature-safe{% endif %}">
+                                        <i class="fas fa-at"></i>
+                                    </div>
+                                    <div class="feature-name">@ Symbol</div>
+                                    <div class="feature-value">
+                                        {% if result.features.Have_At %}Detected{% else %}Not found{% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-card">
+                                    <div class="feature-icon {% if result.features.TinyURL %}feature-danger{% else %}feature-safe{% endif %}">
+                                        <i class="fas fa-compress-alt"></i>
+                                    </div>
+                                    <div class="feature-name">Short URL</div>
+                                    <div class="feature-value">
+                                        {% if result.features.TinyURL %}Detected{% else %}Normal{% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-card">
+                                    <div class="feature-icon {% if result.features.Prefix_Suffix %}feature-danger{% else %}feature-safe{% endif %}">
+                                        <i class="fas fa-minus"></i>
+                                    </div>
+                                    <div class="feature-name">Hyphens</div>
+                                    <div class="feature-value">
+                                        {% if result.features.Prefix_Suffix %}Detected{% else %}Not found{% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-card">
+                                    <div class="feature-icon {% if result.features.Right_Click %}feature-danger{% else %}feature-safe{% endif %}">
+                                        <i class="fas fa-mouse-pointer"></i>
+                                    </div>
+                                    <div class="feature-name">Right Click</div>
+                                    <div class="feature-value">
+                                        {% if result.features.Right_Click %}Disabled{% else %}Enabled{% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="feature-card">
+                                    <div class="feature-icon {% if result.features.Redirection %}feature-danger{% else %}feature-safe{% endif %}">
+                                        <i class="fas fa-exchange-alt"></i>
+                                    </div>
+                                    <div class="feature-name">Redirections</div>
+                                    <div class="feature-value">
+                                        {% if result.features.Redirection %}Detected{% else %}None{% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% if result.prediction == 'PHISHING' or result.prediction == 'SUSPICIOUS' %}
+                                <div class="warning-section">
+                                    <div class="warning-title">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <h3>Potential Security Risks</h3>
+                                    </div>
+                                    <ul class="warning-list">
+                                        {% if result.features.Have_IP %}
+                                            <li>Uses IP address instead of domain name (common in phishing attempts)</li>
+                                        {% endif %}
+                                        {% if result.features.Have_At %}
+                                            <li>Contains @ symbol in URL (can be used to hide real domain)</li>
+                                        {% endif %}
+                                        {% if result.features.TinyURL %}
+                                            <li>Very short URL (often used to mask malicious links)</li>
+                                        {% endif %}
+                                        {% if result.features.Prefix_Suffix %}
+                                            <li>Contains hyphens in domain name (suspicious in many cases)</li>
+                                        {% endif %}
+                                        {% if result.features.Right_Click %}
+                                            <li>Right-click might be disabled (common tactic in phishing pages)</li>
+                                        {% endif %}
+                                        {% if result.features.Redirection %}
+                                            <li>Multiple redirections detected (can lead to malicious sites)</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                                
+                                <div class="alert-message alert-{% if result.prediction == 'PHISHING' %}danger{% else %}warning{% endif %}">
+                                    <i class="fas {% if result.prediction == 'PHISHING' %}fa-radiation-alt{% else %}fa-exclamation-circle{% endif %}"></i>
+                                    {% if result.prediction == 'PHISHING' %}
+                                        <div>
+                                            <strong>DANGER:</strong> This URL has a high probability of being a phishing attempt. 
+                                            Do not enter any personal information or credentials on this site.
+                                        </div>
+                                    {% else %}
+                                        <div>
+                                            <strong>WARNING:</strong> This URL shows suspicious characteristics. 
+                                            Proceed with extreme caution and verify the site's authenticity.
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="alert-message safe-message">
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <strong>SAFE:</strong> This URL appears to be legitimate based on our analysis. 
+                                        However, always remain vigilant when entering sensitive information online.
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
