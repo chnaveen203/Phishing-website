@@ -28,10 +28,10 @@ Before stating the ML model training, the data is split into 80-20 i.e., 8000 tr
 
 This data set comes under classification problem, as the input URL is classified as phishing (1) or legitimate (0). The supervised machine learning models (classification) considered to train the dataset in this project are:
 
-Decision Tree
-Random Forest
-XGBoost
-Autoencoder Neural Network
-Support Vector Machines
+****Decision Tree****,
+****Random Forest****,
+****XGBoost****,
+****Autoencoder Neural Network****,
+****Support Vector Machines****,
 
 All these models are trained on the dataset and evaluation of the model is done with the test dataset. The elaborate details of the models & its training are mentioned in Phishing Website Detection_Models & Training.ipynbOpen In Colab
